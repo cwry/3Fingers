@@ -5,7 +5,7 @@ using System.Linq;
 using System;
 using RSG;
 
-public static partial class TweenEnumerators{
+public static partial class TweenUtil{
     public static GameAction TweenPathByTime(MonoBehaviour behaviour, Vector2[] path, float time) {
         var promise = new Promise();
         var routine = TweenPathEnumerator(behaviour.gameObject, path, time, null, () => promise.Resolve());
