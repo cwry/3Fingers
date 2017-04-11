@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
+﻿using System;
 using RSG;
+using UnityEngine;
 
 public class GameActionHandler {
     GameActionHandler() { }
@@ -16,9 +14,11 @@ public class GameActionHandler {
 
     GameAction currentAction;
 
-    public bool IsBlocked() {
-        if (currentAction == null) return false;
-        return true;
+    public bool IsBlocked{
+        get {
+            if (currentAction == null) return false;
+            return currentAction.IsBlocking;
+        }
     }
 
     public bool Execute(GameAction gameAction) {
@@ -70,12 +70,12 @@ public class GameAction : Promise{
         );
     }
 
-    public bool IsBlocking() {
-        return cancel != null;
+    public bool IsBlocking {
+        get { return cancel == null; }
     }
 
     public bool Cancel() {
-        if (!IsBlocking()) {
+        if (!IsBlocking) {
             cancel();
             Resolve();
             return true;

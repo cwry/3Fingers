@@ -88,6 +88,8 @@
     <Compile Include="Assets\Scripts\Components\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Components\TerrainLayer.cs" />
     <Compile Include="Assets\Scripts\System\GameAction.cs" />
+    <Compile Include="Assets\Scripts\System\TweenPathEnumerator.cs" />
+    <Compile Include="Assets\Scripts\Util\LinqScan.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Lib\iTween\ReadMe!\ReadMe!.txt" />
