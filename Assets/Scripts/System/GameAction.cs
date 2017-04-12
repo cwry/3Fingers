@@ -14,6 +14,8 @@ public class GameActionHandler {
 
     GameAction currentAction;
 
+    public event Action ExecutionStateChanged;
+
     public bool IsBlocked{
         get {
             if (currentAction == null) return false;
@@ -29,11 +31,14 @@ public class GameActionHandler {
         currentAction
             .Catch(e => {
                 currentAction = null;
+                if (ExecutionStateChanged != null) ExecutionStateChanged();
             })
             .Done(() => {
                 currentAction = null;
+                if (ExecutionStateChanged != null) ExecutionStateChanged();
             });
 
+        if (ExecutionStateChanged != null) ExecutionStateChanged();
         return true;
     }
 
