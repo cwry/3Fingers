@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+public enum LookDirection {
+    LEFT,
+    RIGHT
+}
+
 public class PlayerController : MonoBehaviour {
     static PlayerController instance;
     public static PlayerController Instance {
@@ -14,6 +19,24 @@ public class PlayerController : MonoBehaviour {
     public TerrainLayer currentTerrainLayer;
     public float speed = 1f;
 
+    LookDirection _lookDirection;
+    public LookDirection LookDirection {
+        get {
+            return _lookDirection;
+        }
+        set {
+            if (spriteRenderer != null) {
+                spriteRenderer.flipX = value == LookDirection.RIGHT;
+            }
+            _lookDirection = value;
+        }
+    }
+
+    public GameAction MoveTo(float x) {
+        LookDirection = Mathf.Sign(x - transform.position.x) > 0 ? LookDirection.RIGHT : LookDirection.LEFT;
+        return TweenUtil.TweenPathBySpeed(this, currentTerrainLayer.GetSubPath(transform.position.x, x), speed, EasingFunctions.InOutSin);
+    }
+
     void Awake() {
         if (currentTerrainLayer != null) transform.position = (Vector3)currentTerrainLayer.Sample(transform.position.x);
     }
@@ -24,11 +47,7 @@ public class PlayerController : MonoBehaviour {
             (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()) &&
             Input.GetMouseButtonDown(0)
         ) {
-            float inputX = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
-            if(spriteRenderer != null) {
-                spriteRenderer.flipX = Mathf.Sign(transform.position.x - inputX) < 0;
-            }
-            GameActionHandler.Instance.Execute(TweenUtil.TweenPathBySpeed(this, currentTerrainLayer.GetSubPath(transform.position.x, inputX), speed, EasingFunctions.InOutSin));
+            GameActionHandler.Instance.Execute(MoveTo(Camera.main.ScreenToWorldPoint(Input.mousePosition).x));
         }
     }
 }

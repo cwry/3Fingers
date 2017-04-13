@@ -17,24 +17,23 @@ namespace Interactions.PrototypeLevel {
         }
 
         public override void OnTrigger() {
-            Flags.Scene["HasBall"] = false;
-            ball.SetActive(true);
+            GameActionHandler.Instance.Execute(
+                PlayerController.Instance.MoveTo(ball.transform.position.x)
+                    .Then(() => {
+                        PlayerController.Instance.LookDirection = LookDirection.LEFT;
+                        Flags.Scene["HasBall"] = false;
+                        ball.SetActive(true);
 
-            var promise = new Promise();
-            AnimationUtil.PlayOneShot(ball, ballThrowAnimation, 
-                new Dictionary<string, Action>() {
-                    { "hit_roof", () => {
-                        AnimationUtil.PlayOneShot(bird, birdFlyAnimation)
-                            .Then(() => {
-                                return AnimationUtil.PlayOneShot(key, keyFallAnimation);
-                            })
-                            .Done(() => {
-                                promise.Resolve();
-                            });
-                    } }
-                });
+                        var ballThrow = AnimationUtil.PlayOneShot(ball, ballThrowAnimation);
+                        return Promise.All(
+                            ballThrow["hit_roof"]
+                                .Then(() => AnimationUtil.PlayOneShot(bird, birdFlyAnimation)[null])
+                                .Then(() => AnimationUtil.PlayOneShot(key, keyFallAnimation)[null]),
 
-            GameActionHandler.Instance.Execute(promise);
+                            ballThrow[null]
+                        );
+                    })
+            );
         }
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class Interactable : MonoBehaviour {
     public Transform buttonPosition;
     public Transform triggerPosition;
-    public Vector2 buttonRange;
+    public Vector2 triggerRange;
     Button currentButton;
 
     public Func<bool> conditional;
@@ -22,10 +22,10 @@ public class Interactable : MonoBehaviour {
             condition &&
             !GameActionHandler.Instance.IsBlocked &&
             PlayerController.Instance != null &&
-            PlayerController.Instance.transform.position.x < triggerPosition.position.x + buttonRange.x / 2 &&
-            PlayerController.Instance.transform.position.x > triggerPosition.position.x - buttonRange.x / 2 &&
-            PlayerController.Instance.transform.position.y < triggerPosition.position.y + buttonRange.y / 2 &&
-            PlayerController.Instance.transform.position.y > triggerPosition.position.y - buttonRange.y / 2
+            PlayerController.Instance.transform.position.x < triggerPosition.position.x + triggerRange.x / 2 &&
+            PlayerController.Instance.transform.position.x > triggerPosition.position.x - triggerRange.x / 2 &&
+            PlayerController.Instance.transform.position.y < triggerPosition.position.y + triggerRange.y / 2 &&
+            PlayerController.Instance.transform.position.y > triggerPosition.position.y - triggerRange.y / 2
         ) {
             if(currentButton == null) {
                 GameActionHandler.Instance.ExecutionStateChanged += OnExecutionStateChanged;
@@ -55,6 +55,9 @@ public class Interactable : MonoBehaviour {
 
     void OnDrawGizmosSelected() {
         Gizmos.color = new Color(0, 0, 1f, 0.5f);
-        Gizmos.DrawCube(triggerPosition == null ? transform.position : triggerPosition.position, buttonRange);
+        Gizmos.DrawCube(triggerPosition == null ? transform.position : triggerPosition.position, triggerRange);
+        Gizmos.color = Color.black;
+        Gizmos.DrawCube(buttonPosition == null ? transform.position : buttonPosition.position, new Vector3(1, 1, 0));
+        Gizmos.DrawLine(triggerPosition == null ? transform.position : triggerPosition.position, buttonPosition == null ? transform.position : buttonPosition.position);
     }
 }

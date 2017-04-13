@@ -53,10 +53,10 @@ public static partial class TweenUtil{
         float progress = 0;
 
         while(progress < 1) {
-            float easedProgress = ease(progress);
+            float easedProgress = Mathf.Clamp01(ease(progress));
             int tweenIndex = Enumerable
                 .Range(0, progresses.Length)
-                .First(i => easedProgress >= progresses[i] && easedProgress < progresses[i + 1]);
+                .First(i => easedProgress >= progresses[i] && easedProgress <= progresses[i + 1]);
 
             float delta = (easedProgress - progresses[tweenIndex]) / (progresses[tweenIndex + 1] - progresses[tweenIndex]);
             Vector2 pos = Vector2.Lerp(path[tweenIndex], path[tweenIndex + 1], delta);
