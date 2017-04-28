@@ -13,15 +13,15 @@ namespace Interactions.PrototypeLevel {
         public AnimationClip keyFallAnimation;
 
         public override bool Condition() {
-            return Flags.Scene["HasBall"];
+            return Inventory.Instance.HasItem("ball");
         }
 
         public override void OnTrigger() {
-            GameActionHandler.Instance.Execute(
+            GameActionHandler.Instance.SetCurrent(
                 PlayerController.Instance.MoveTo(ball.transform.position.x)
                     .Then(() => {
                         PlayerController.Instance.LookDirection = LookDirection.LEFT;
-                        Flags.Scene["HasBall"] = false;
+                        Inventory.Instance.RemoveItem("ball");
                         ball.SetActive(true);
 
                         var ballThrow = AnimationUtil.PlayOneShot(ball, ballThrowAnimation);

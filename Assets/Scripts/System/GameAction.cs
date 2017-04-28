@@ -23,7 +23,7 @@ public class GameActionHandler {
         }
     }
 
-    public bool Execute(GameAction gameAction) {
+    public bool SetCurrent(GameAction gameAction) {
         if (currentAction != null) {
             if(!currentAction.Cancel()) return false;
         }
@@ -42,12 +42,12 @@ public class GameActionHandler {
         return true;
     }
 
-    public bool Execute(IPromise promise) {
-        return Execute(GameAction.Create(promise));
+    public bool SetCurrent(IPromise promise) {
+        return SetCurrent(GameAction.Create(promise));
     }
 
-    public bool Execute<T>(IPromise<T> promise) {
-        return Execute(GameAction.Create(promise));
+    public bool SetCurrent<T>(IPromise<T> promise) {
+        return SetCurrent(GameAction.Create(promise));
     }
 }
 

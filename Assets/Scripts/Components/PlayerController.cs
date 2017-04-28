@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour {
             (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()) &&
             Input.GetMouseButtonDown(0)
         ) {
-            GameActionHandler.Instance.Execute(MoveTo(Camera.main.ScreenToWorldPoint(Input.mousePosition).x));
+            GameActionHandler.Instance.SetCurrent(MoveTo(Camera.main.ScreenToWorldPoint(Input.mousePosition).x));
         }
     }
 }

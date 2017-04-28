@@ -8,7 +8,7 @@ namespace Interactions.PrototypeLevel {
 
         public override void OnTrigger() {
             key.SetActive(false);
-            Flags.Scene["HasKey"] = true;
+            Inventory.Instance.AddItem("key");
         }
     }
 
