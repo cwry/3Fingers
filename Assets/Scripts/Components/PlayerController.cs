@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Spine.Unity;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public enum LookDirection {
@@ -15,7 +16,9 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public SpriteRenderer spriteRenderer;
+    public SkeletonAnimation skeletonAnimation;
+    public SpineAnimationDescription idleAnimation;
+    public SpineAnimationDescription walkAnimation;
     public TerrainLayer currentTerrainLayer;
     public float speed = 1f;
 
@@ -25,8 +28,8 @@ public class PlayerController : MonoBehaviour {
             return _lookDirection;
         }
         set {
-            if (spriteRenderer != null) {
-                spriteRenderer.flipX = value == LookDirection.RIGHT;
+            if (skeletonAnimation != null) {
+                skeletonAnimation.skeleton.flipX = value == LookDirection.LEFT;
             }
             _lookDirection = value;
         }
@@ -34,7 +37,13 @@ public class PlayerController : MonoBehaviour {
 
     public GameAction MoveTo(float x) {
         LookDirection = Mathf.Sign(x - transform.position.x) > 0 ? LookDirection.RIGHT : LookDirection.LEFT;
-        return TweenUtil.TweenPathBySpeed(this, currentTerrainLayer.GetSubPath(transform.position.x, x), speed, EasingFunctions.InOutSin);
+        AnimationUtil.PlaySpine(gameObject, walkAnimation);
+        var gameAction = TweenUtil.TweenPathBySpeed(this, currentTerrainLayer.GetSubPath(transform.position.x, x), speed, EasingFunctions.Linear);
+        gameAction
+            .Then(() => {
+                AnimationUtil.PlaySpine(gameObject, idleAnimation);
+            });
+        return gameAction;
     }
 
     void Awake() {

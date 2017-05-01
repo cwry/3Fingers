@@ -26,11 +26,11 @@ namespace Interactions.PrototypeLevel {
 
                         var ballThrow = AnimationUtil.PlayOneShot(ball, ballThrowAnimation);
                         return Promise.All(
-                            ballThrow["hit_roof"]
-                                .Then(() => AnimationUtil.PlayOneShot(bird, birdFlyAnimation)[null])
-                                .Then(() => AnimationUtil.PlayOneShot(key, keyFallAnimation)[null]),
+                            ballThrow.Promise("hit_roof")
+                                .Then(() => AnimationUtil.PlayOneShot(bird, birdFlyAnimation).Promise("end"))
+                                .Then(() => AnimationUtil.PlayOneShot(key, keyFallAnimation).Promise("end")),
 
-                            ballThrow[null]
+                            ballThrow.Promise("end")
                         );
                     })
             );

@@ -20,7 +20,7 @@ namespace Interactions.PrototypeLevel {
                         PlayerController.Instance.LookDirection = LookDirection.RIGHT;
                         Inventory.Instance.RemoveItem("ball");
                         ball.SetActive(true);
-                        return AnimationUtil.PlayOneShot(ball, ballThrowAnimation)[null];
+                        return AnimationUtil.PlayOneShot(ball, ballThrowAnimation).Promise("end");
                     })
             );
         }
