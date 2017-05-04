@@ -17,11 +17,12 @@ public class PlayerController : MonoBehaviour {
     }
 
     public SkeletonAnimation skeletonAnimation;
-    public SpineAnimationDescription idleAnimation;
-    public SpineAnimationDescription walkAnimation;
+    public OAAnimation idleAnimation;
+    public OAAnimation walkAnimation;
     public TerrainLayer currentTerrainLayer;
     public float speed = 1f;
 
+    [SerializeField]
     LookDirection _lookDirection;
     public LookDirection LookDirection {
         get {
@@ -37,11 +38,11 @@ public class PlayerController : MonoBehaviour {
 
     public GameAction MoveTo(float x) {
         LookDirection = Mathf.Sign(x - transform.position.x) > 0 ? LookDirection.RIGHT : LookDirection.LEFT;
-        AnimationUtil.PlaySpine(gameObject, walkAnimation);
+        walkAnimation.Play(gameObject);
         var gameAction = TweenUtil.TweenPathBySpeed(this, currentTerrainLayer.GetSubPath(transform.position.x, x), speed, EasingFunctions.Linear);
         gameAction
             .Then(() => {
-                AnimationUtil.PlaySpine(gameObject, idleAnimation);
+                idleAnimation.Play(gameObject);
             });
         return gameAction;
     }
@@ -50,13 +51,17 @@ public class PlayerController : MonoBehaviour {
         if (currentTerrainLayer != null) transform.position = (Vector3)currentTerrainLayer.Sample(transform.position.x);
     }
 
+    void Start() {
+        LookDirection = LookDirection;
+    }
+
     void Update() {
         if (
-            !GameActionHandler.Instance.IsBlocked &&
+            !GameActionHandler.IsBlocked &&
             (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject()) &&
             Input.GetMouseButtonDown(0)
         ) {
-            GameActionHandler.Instance.SetCurrent(MoveTo(Camera.main.ScreenToWorldPoint(Input.mousePosition).x));
+            GameActionHandler.Execute(() => MoveTo(Camera.main.ScreenToWorldPoint(Input.mousePosition).x));
         }
     }
 }

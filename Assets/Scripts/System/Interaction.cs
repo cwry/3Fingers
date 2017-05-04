@@ -16,7 +16,7 @@ public abstract class Interaction : MonoBehaviour {
     bool shouldShowButton() {
         if (
             !Condition() ||
-            GameActionHandler.Instance.IsBlocked ||
+            GameActionHandler.IsBlocked ||
             PlayerController.Instance == null
         ) {
             return false;
@@ -34,29 +34,29 @@ public abstract class Interaction : MonoBehaviour {
     void Update() {
         if (shouldShowButton()) {
             if (currentButton == null) {
-                GameActionHandler.Instance.ExecutionStateChanged += OnExecutionStateChanged;
+                GameActionHandler.ExecutionStateChanged += OnExecutionStateChanged;
                 currentButton = InteractCanvas.Instance.SpawnButton(new Vector2(buttonPosition.position.x, buttonPosition.position.y));
                 currentButton.onClick.AddListener(() => {
-                    GameActionHandler.Instance.ExecutionStateChanged -= OnExecutionStateChanged;
+                    GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
                     Destroy(currentButton.gameObject);
                     OnTrigger();
                 });
             }
         } else if (currentButton != null) {
-            GameActionHandler.Instance.ExecutionStateChanged -= OnExecutionStateChanged;
+            GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
             Destroy(currentButton.gameObject);
         }
     }
 
     void OnExecutionStateChanged() {
-        if (currentButton != null && GameActionHandler.Instance.IsBlocked) {
-            GameActionHandler.Instance.ExecutionStateChanged -= OnExecutionStateChanged;
+        if (currentButton != null && GameActionHandler.IsBlocked) {
+            GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
             Destroy(currentButton.gameObject);
         }
     }
 
     void OnDestroy() {
-        GameActionHandler.Instance.ExecutionStateChanged -= OnExecutionStateChanged;
+        GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
     }
 
     void OnDrawGizmosSelected() {
@@ -71,5 +71,14 @@ public abstract class Interaction : MonoBehaviour {
         return true;
     }
 
-    public virtual void OnTrigger() {}
+    public abstract void OnTrigger();
+}
+
+public abstract class Interaction<T> : Interaction where T : IPromise{
+
+    public sealed override void OnTrigger() {
+        GameActionHandler.Execute(() => Execute());
+    }
+
+    public abstract T Execute();
 }

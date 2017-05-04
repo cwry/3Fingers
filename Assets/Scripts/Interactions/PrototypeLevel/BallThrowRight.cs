@@ -4,36 +4,34 @@ using System;
 using System.Collections.Generic;
 
 namespace Interactions.PrototypeLevel {
-    public class BallThrowRight : Interaction {
+    public class BallThrowRight : Interaction<IPromise> {
         public GameObject ball;
-        public AnimationClip ballThrowAnimation;
+        public OAAnimation ballThrowAnimation;
         public GameObject bird;
-        public AnimationClip birdFlyAnimation;
+        public OAAnimation birdFlyAnimation;
         public GameObject key;
-        public AnimationClip keyFallAnimation;
+        public OAAnimation keyFallAnimation;
 
         public override bool Condition() {
-            return Inventory.Instance.HasItem("ball");
+            return Inventory.HasItem("ball");
         }
 
-        public override void OnTrigger() {
-            GameActionHandler.Instance.SetCurrent(
-                PlayerController.Instance.MoveTo(ball.transform.position.x)
-                    .Then(() => {
-                        PlayerController.Instance.LookDirection = LookDirection.LEFT;
-                        Inventory.Instance.RemoveItem("ball");
-                        ball.SetActive(true);
+        public override IPromise Execute() {
+            return PlayerController.Instance.MoveTo(ball.transform.position.x)
+                .Then(() => {
+                    PlayerController.Instance.LookDirection = LookDirection.LEFT;
+                    Inventory.RemoveItem("ball");
+                    ball.SetActive(true);
 
-                        var ballThrow = AnimationUtil.PlayOneShot(ball, ballThrowAnimation);
-                        return Promise.All(
-                            ballThrow.Promise("hit_roof")
-                                .Then(() => AnimationUtil.PlayOneShot(bird, birdFlyAnimation).Promise("end"))
-                                .Then(() => AnimationUtil.PlayOneShot(key, keyFallAnimation).Promise("end")),
+                    var ballThrow = ballThrowAnimation.Play(ball);
+                    return Promise.All(
+                        ballThrow.Promise("hit_roof")
+                            .Then(() => birdFlyAnimation.Play(bird).Promise("end"))
+                            .Then(() => keyFallAnimation.Play(key).Promise("end")),
 
-                            ballThrow.Promise("end")
-                        );
-                    })
-            );
+                        ballThrow.Promise("end")
+                    );
+                });
         }
     }
 }

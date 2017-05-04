@@ -1,64 +1,102 @@
 ﻿using System;
 using RSG;
-using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameActionHandler {
     GameActionHandler() { }
-    static GameActionHandler instance;
-    public static GameActionHandler Instance {
+    static GameActionHandler _instance;
+    static GameActionHandler Instance {
         get {
-            if (instance == null) instance = new GameActionHandler();
-            return instance;
+            if (_instance == null) {
+                _instance = new GameActionHandler();
+                SceneManager.activeSceneChanged += cleanupOnSceneChange;
+            }
+            return _instance;
         }
+    }
+
+    static void cleanupOnSceneChange(Scene oldScene, Scene newScene) {
+        _instance = null;
+        SceneManager.activeSceneChanged -= cleanupOnSceneChange;
     }
 
     GameAction currentAction;
 
-    public event Action ExecutionStateChanged;
+    event Action _executionStateChanged;
 
-    public bool IsBlocked{
-        get {
-            if (currentAction == null) return false;
-            return currentAction.IsBlocking;
+    public static event Action ExecutionStateChanged {
+        add {
+            Instance._executionStateChanged += value;
+        }
+        remove {
+            Instance._executionStateChanged -= value;
         }
     }
 
-    public bool SetCurrent(GameAction gameAction) {
-        if (currentAction != null) {
-            if(!currentAction.Cancel()) return false;
+    public static bool IsBlocked{
+        get {
+            if (Instance.currentAction == null) return false;
+            return Instance.currentAction.IsBlocking;
         }
-        currentAction = gameAction;
-        currentAction
+    }
+
+    public static bool Execute(Func<GameAction> getGameAction) {
+        if (Instance.currentAction != null) {
+            if (!Instance.currentAction.Cancel()) return false;
+        }
+
+        Instance.currentAction = getGameAction();
+        Instance.currentAction
             .Catch(e => {
-                currentAction = null;
-                if (ExecutionStateChanged != null) ExecutionStateChanged();
+                Instance.currentAction = null;
+                if (Instance._executionStateChanged != null) Instance._executionStateChanged();
             })
             .Done(() => {
-                currentAction = null;
-                if (ExecutionStateChanged != null) ExecutionStateChanged();
+                Instance.currentAction = null;
+                if (Instance._executionStateChanged != null) Instance._executionStateChanged();
             });
 
-        if (ExecutionStateChanged != null) ExecutionStateChanged();
+        if (Instance._executionStateChanged != null) Instance._executionStateChanged();
         return true;
     }
 
-    public bool SetCurrent(IPromise promise) {
-        return SetCurrent(GameAction.Create(promise));
+    public static bool Execute(Func<IPromise> getPromise) {
+        return Execute(() => GameAction.Create(getPromise()));
     }
 
-    public bool SetCurrent<T>(IPromise<T> promise) {
-        return SetCurrent(GameAction.Create(promise));
+    public static bool Execute<T>(Func<IPromise<T>> getPromise) {
+        return Execute(() => GameAction.Create(getPromise()));
+    }
+
+    public static bool SetCurrent(GameAction gameAction) {
+        return Execute(() => gameAction);
+    }
+
+    public static bool SetCurrent(IPromise promise) {
+        return Execute(() => promise);
+    }
+
+    public static bool SetCurrent<T>(IPromise<T> promise) {
+        return Execute(() => promise);
     }
 }
 
 public class GameAction : Promise{
     Action cancel;
 
+    GameAction(Action cancel = null) {
+        this.cancel = cancel;
+    }
+
     GameAction(IPromise promise, Action cancel = null) {
         promise
             .Catch(e => Reject(e))
             .Done(() => Resolve());
         this.cancel = cancel;
+    }
+
+    public static GameAction Create(Action cancel = null) {
+        return new GameAction(cancel);
     }
 
     public static GameAction Create(IPromise promise, Action cancel = null) {
@@ -68,8 +106,8 @@ public class GameAction : Promise{
     public static GameAction Create<T>(IPromise<T> promise, Action cancel = null) {
         return Create(
             promise
-                .Catch(e => Rejected(e))
-                .Then(v => Resolved()),
+                .Then(v => Resolved())
+                .Catch(e => Rejected(e)),
 
             cancel
         );

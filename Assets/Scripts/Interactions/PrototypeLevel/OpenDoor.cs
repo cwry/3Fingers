@@ -3,7 +3,7 @@
 public class OpenDoor : Interaction {
 
     public override bool Condition() {
-        return Inventory.Instance.HasItem("key");
+        return Inventory.HasItem("key");
     }
 
     public override void OnTrigger() {

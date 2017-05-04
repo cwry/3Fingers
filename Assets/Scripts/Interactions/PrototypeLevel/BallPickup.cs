@@ -8,7 +8,7 @@ namespace Interactions.PrototypeLevel {
 
         public override void OnTrigger() {
             ball.SetActive(false);
-            Inventory.Instance.AddItem("ball");
+            Inventory.AddItem("ball");
         }
     }
 }

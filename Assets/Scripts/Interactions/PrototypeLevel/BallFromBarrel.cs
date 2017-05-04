@@ -10,7 +10,7 @@ namespace Interactions.PrototypeLevel {
 
         public override void OnTrigger() {
             exhausted = true;
-            Inventory.Instance.AddItem("ball");
+            Inventory.AddItem("ball");
         }
     }
 }

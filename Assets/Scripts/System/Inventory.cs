@@ -5,15 +5,15 @@ using System.Linq;
 using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour {
-    static Inventory instance;
-    public static Inventory Instance {
+    static Inventory _instance;
+    static Inventory Instance {
         get {
-            if (instance == null) instance = (Instantiate(Resources.Load("InventoryUI")) as GameObject).GetComponent<Inventory>();
-            return instance;
+            if (_instance == null) _instance = (Instantiate(Resources.Load("InventoryUI")) as GameObject).GetComponent<Inventory>();
+            return _instance;
         }
     }
 
-    private struct InventoryEntry{
+    struct InventoryEntry{
         public InventoryEntry(InventoryItem item, GameObject interfaceObject) {
             this.item = item;
             this.interfaceObject = interfaceObject;
@@ -33,7 +33,7 @@ public class Inventory : MonoBehaviour {
         inventoryImage = Resources.Load<GameObject>("InventoryImage");
     }
 
-    public GameObject instantiateInterfaceObject(Sprite sprite) {
+    GameObject instantiateInterfaceObject(Sprite sprite) {
         var interfaceObjectInstance = Instantiate(inventoryImage) as GameObject;
         interfaceObjectInstance.transform.SetParent(itemContainer.transform);
         interfaceObjectInstance.transform.localScale = Vector3.one;
@@ -42,28 +42,28 @@ public class Inventory : MonoBehaviour {
         return interfaceObjectInstance;
     }
 
-    public bool AddItem(string name) {
+    public static bool AddItem(string name) {
         var item = Resources.Load<InventoryItem>("InventoryItems/" + name);
         if (item == null) {
             Debug.LogError("InventoryItem " + name + " not found.");
             return false;
         }
-        items.Add(new InventoryEntry(item, instantiateInterfaceObject(item.sprite)));
+        Instance.items.Add(new InventoryEntry(item, Instance.instantiateInterfaceObject(item.sprite)));
         return true;
     }
 
-    public bool RemoveItem(string name) {
-        var rmIndex = items.Select((value, index) => new { value, index = index + 1 })
+    public static bool RemoveItem(string name) {
+        var rmIndex = Instance.items.Select((value, index) => new { value, index = index + 1 })
                 .Where(pair => pair.value.item.name == name)
                 .Select(pair => pair.index)
                 .FirstOrDefault() - 1;
         if (rmIndex == -1) return false;
-        Destroy(items[rmIndex].interfaceObject);
-        items.RemoveAt(rmIndex);
+        Destroy(Instance.items[rmIndex].interfaceObject);
+        Instance.items.RemoveAt(rmIndex);
         return true;
     }
 
-    public bool HasItem(string name) {
-        return items.Where(itemEntry => itemEntry.item.name == name).Count() > 0;
+    public static bool HasItem(string name) {
+        return Instance.items.Where(itemEntry => itemEntry.item.name == name).Count() > 0;
     }
 }
