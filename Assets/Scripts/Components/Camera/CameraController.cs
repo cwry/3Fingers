@@ -2,10 +2,24 @@
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
+    static CameraController _instance;
+    public static CameraController Instance {
+        get {
+            if(_instance == null) {
+                _instance = FindObjectOfType<CameraController>();
+            }
+            return _instance;
+        }
+    }
+
     public CameraFollowSettings cfs;
     public GameObject target;
 
     private bool init = true;
+
+    void Awake() {
+        if (_instance == null) _instance = this;
+    }
 
     void Update() {
         if (cfs == null) return;

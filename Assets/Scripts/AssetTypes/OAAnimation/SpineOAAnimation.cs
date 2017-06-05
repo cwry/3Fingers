@@ -7,6 +7,7 @@ public class SpineOAAnimation : OAAnimation {
     public string animation;
     public float timeScale = 1;
     public bool loop;
+    public SpineOAAnimation exitAnimation;
 
     public override AnimationEventDispatcher Play(GameObject go) {
         var skeletonAnimation = go.GetComponentInChildren<SkeletonAnimation>();
@@ -15,11 +16,11 @@ public class SpineOAAnimation : OAAnimation {
             return null;
         }
 
-        var gameAction = GameAction.Create(() => skeletonAnimation.AnimationName = null);
+        var gameAction = GameAction.Create(() => { }); //cancel invokes resolve() - exit logic is handled by then()
         var animationEventDispatcher = new AnimationEventDispatcher(gameAction);
 
-        skeletonAnimation.loop = loop;
-        skeletonAnimation.timeScale = timeScale;
+        var animationEntry = skeletonAnimation.AnimationState.SetAnimation(0, animation, loop);
+        animationEntry.TimeScale = timeScale;
 
         Action destroyCallback = () => gameAction.Resolve();
 
@@ -30,31 +31,37 @@ public class SpineOAAnimation : OAAnimation {
                 animationEventDispatcher.FireAnimationEvent(e.data.name);
             }
         };
-        skeletonAnimation.state.Event += onEvent;
+        animationEntry.Event += onEvent;
 
         Spine.AnimationState.TrackEntryDelegate onEnd = (entry) => {
-            if (entry.ToString() == animation) {
-                gameAction.Resolve();
-            }
+            gameAction.Resolve();
         };
-        skeletonAnimation.state.End += onEnd;
+        animationEntry.End += onEnd;
 
         Spine.AnimationState.TrackEntryDelegate onComplete = (entry) => {
             if (!loop) {
-                skeletonAnimation.AnimationName = null;
+                gameAction.Resolve();
             }
         };
-        skeletonAnimation.state.Complete += onComplete;
+        animationEntry.Complete += onComplete;
 
         gameAction
             .Then(() => {
                 ObjectDestroyEvent.Get(go).Destroy -= destroyCallback;
-                skeletonAnimation.state.Event -= onEvent;
-                skeletonAnimation.state.End -= onEnd;
-                skeletonAnimation.state.Complete -= onComplete;
+                animationEntry.Event -= onEvent;
+                animationEntry.End -= onEnd;
+                animationEntry.Complete -= onComplete;
+                PlayExitAnimation(skeletonAnimation);
             });
 
-        if (skeletonAnimation.AnimationName != animation) skeletonAnimation.AnimationName = animation;
         return animationEventDispatcher;
+    }
+
+    void PlayExitAnimation(SkeletonAnimation skeletonAnimation) {
+        if (exitAnimation != null) {
+            skeletonAnimation.AnimationState.SetAnimation(0, exitAnimation.animation, exitAnimation.loop).TimeScale = exitAnimation.timeScale;
+        }else{
+            skeletonAnimation.AnimationState.SetEmptyAnimation(0, 0.5f);
+        }
     }
 }

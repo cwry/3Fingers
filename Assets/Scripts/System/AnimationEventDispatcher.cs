@@ -20,7 +20,7 @@ public class AnimationEventDispatcher {
             });
     }
 
-    internal void FireAnimationEvent(string eventName) {
+    public void FireAnimationEvent(string eventName) {
         if (listeners.ContainsKey(eventName)) {
             foreach(var listener in listeners[eventName].ToArray()) {  //toarray to copy the list (so listeners can unsubscribe during loop)
                 listener();

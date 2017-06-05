@@ -8,7 +8,7 @@ public class Inventory : MonoBehaviour {
     static Inventory _instance;
     static Inventory Instance {
         get {
-            if (_instance == null) _instance = (Instantiate(Resources.Load("InventoryUI")) as GameObject).GetComponent<Inventory>();
+            if (_instance == null) _instance = (Instantiate(Resources.Load("GameUI")) as GameObject).GetComponent<Inventory>();
             return _instance;
         }
     }
@@ -23,13 +23,13 @@ public class Inventory : MonoBehaviour {
         public GameObject interfaceObject;
     }
 
-    public int preferredItemWidth = 100;
     public GameObject itemContainer;
 
     GameObject inventoryImage;
     List<InventoryEntry> items = new List<InventoryEntry>();
 
     void Awake() {
+        if (_instance == null) _instance = this;
         inventoryImage = Resources.Load<GameObject>("InventoryImage");
     }
 

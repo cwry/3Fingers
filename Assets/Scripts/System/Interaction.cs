@@ -4,16 +4,18 @@ using UnityEngine.UI;
 using RSG;
 
 public abstract class Interaction : MonoBehaviour {
+    public GameObject[] blinkers;
     public Transform buttonPosition;
     public Transform triggerPosition;
     Button currentButton;
+    Action cancelCurrentBlinker;
 
     void Awake() {
         if (buttonPosition == null) buttonPosition = transform;
         if (triggerPosition == null) triggerPosition = transform;
     }
 
-    bool shouldShowButton() {
+    bool shouldBeTriggerable() {
         if (
             !Condition() ||
             GameActionHandler.IsBlocked ||
@@ -32,19 +34,22 @@ public abstract class Interaction : MonoBehaviour {
     }
 
     void Update() {
-        if (shouldShowButton()) {
+        if (shouldBeTriggerable()) {
             if (currentButton == null) {
                 GameActionHandler.ExecutionStateChanged += OnExecutionStateChanged;
                 currentButton = InteractCanvas.Instance.SpawnButton(new Vector2(buttonPosition.position.x, buttonPosition.position.y));
+                cancelCurrentBlinker = SpriteBlink.Enable(blinkers, Color.white, Color.gray, 1);
                 currentButton.onClick.AddListener(() => {
                     GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
                     Destroy(currentButton.gameObject);
+                    cancelCurrentBlinker();
                     OnTrigger();
                 });
             }
         } else if (currentButton != null) {
             GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
             Destroy(currentButton.gameObject);
+            cancelCurrentBlinker();
         }
     }
 
@@ -52,6 +57,8 @@ public abstract class Interaction : MonoBehaviour {
         if (currentButton != null && GameActionHandler.IsBlocked) {
             GameActionHandler.ExecutionStateChanged -= OnExecutionStateChanged;
             Destroy(currentButton.gameObject);
+            currentButton = null;
+            cancelCurrentBlinker();
         }
     }
 

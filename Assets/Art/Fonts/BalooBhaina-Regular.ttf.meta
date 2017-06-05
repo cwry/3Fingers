@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 0e59ab5fdb0c1b84485173df197298eb
+timeCreated: 1495468177
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Baloo Bhaina
+  fontNames:
+  - Baloo Bhaina
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

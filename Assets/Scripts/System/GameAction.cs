@@ -120,7 +120,7 @@ public class GameAction : Promise{
     public bool Cancel() {
         if (!IsBlocking) {
             cancel();
-            Resolve();
+            if(CurState == PromiseState.Pending) Resolve();
             return true;
         }
         return false;

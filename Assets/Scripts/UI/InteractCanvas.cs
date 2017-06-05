@@ -7,7 +7,10 @@ public class InteractCanvas : MonoBehaviour {
     static InteractCanvas instance;
     public static InteractCanvas Instance {
         get {
-            if (instance == null) instance = (Instantiate(Resources.Load("InteractCanvas")) as GameObject).GetComponent<InteractCanvas>();
+            if (instance == null) {
+                instance = (Instantiate(Resources.Load("InteractCanvas")) as GameObject).GetComponent<InteractCanvas>();
+            }
+
             return instance;
         }
     }
@@ -15,6 +18,7 @@ public class InteractCanvas : MonoBehaviour {
     Object interactButtonPrefab;
 
     void Awake() {
+        if (instance == null) instance = this;
         interactButtonPrefab = Resources.Load("InteractButton");
     }
 

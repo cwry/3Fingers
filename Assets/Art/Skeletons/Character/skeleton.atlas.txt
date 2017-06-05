@@ -1,0 +1,139 @@
+
+skeleton.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Arm_Up
+  rotate: false
+  xy: 2, 70
+  size: 663, 366
+  orig: 663, 366
+  offset: 0, 0
+  index: -1
+Body
+  rotate: false
+  xy: 2, 438
+  size: 936, 1597
+  orig: 936, 1597
+  offset: 0, 0
+  index: -1
+Eyebrow_left
+  rotate: false
+  xy: 940, 393
+  size: 243, 206
+  orig: 243, 206
+  offset: 0, 0
+  index: -1
+Eyebrow_right
+  rotate: true
+  xy: 1219, 615
+  size: 176, 149
+  orig: 176, 149
+  offset: 0, 0
+  index: -1
+Foot_Left
+  rotate: false
+  xy: 2, 2
+  size: 239, 66
+  orig: 239, 66
+  offset: 0, 0
+  index: -1
+Foot_right
+  rotate: false
+  xy: 2, 2
+  size: 239, 66
+  orig: 239, 66
+  offset: 0, 0
+  index: -1
+Hand_Left
+  rotate: false
+  xy: 1468, 1610
+  size: 453, 425
+  orig: 453, 425
+  offset: 0, 0
+  index: -1
+Hand_LeftPullUp
+  rotate: false
+  xy: 940, 1551
+  size: 526, 484
+  orig: 526, 484
+  offset: 0, 0
+  index: -1
+Hand_RightPullUp
+  rotate: false
+  xy: 940, 1551
+  size: 526, 484
+  orig: 526, 484
+  offset: 0, 0
+  index: -1
+Hand_RightArm
+  rotate: false
+  xy: 940, 601
+  size: 277, 520
+  orig: 277, 520
+  offset: 0, 0
+  index: -1
+Hand_leftarm
+  rotate: false
+  xy: 940, 601
+  size: 277, 520
+  orig: 277, 520
+  offset: 0, 0
+  index: -1
+Hand_right
+  rotate: false
+  xy: 940, 1123
+  size: 469, 426
+  orig: 469, 426
+  offset: 0, 0
+  index: -1
+Leg_Left
+  rotate: true
+  xy: 883, 135
+  size: 127, 262
+  orig: 127, 262
+  offset: 0, 0
+  index: -1
+Leg_right
+  rotate: true
+  xy: 883, 264
+  size: 127, 264
+  orig: 127, 264
+  offset: 0, 0
+  index: -1
+Mouth_Grump
+  rotate: true
+  xy: 1923, 1703
+  size: 332, 101
+  orig: 332, 101
+  offset: 0, 0
+  index: -1
+Mouth_Open
+  rotate: true
+  xy: 1219, 793
+  size: 328, 163
+  orig: 328, 163
+  offset: 0, 0
+  index: -1
+Nose
+  rotate: false
+  xy: 667, 153
+  size: 214, 283
+  orig: 214, 283
+  offset: 0, 0
+  index: -1
+Object_Ball
+  rotate: false
+  xy: 1468, 1576
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Object_Flowerpot
+  rotate: false
+  xy: 1411, 1489
+  size: 48, 60
+  orig: 48, 60
+  offset: 0, 0
+  index: -1
